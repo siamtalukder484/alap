@@ -74,7 +74,7 @@ const Login = () => {
       <TextField id="standard-basic" label="Standard" variant="standard" />
         </Grid>
         <Grid item xs={6}>
-          <div style={{ backgroundColor:"red", width: "100%", height: "100vh" }}></div>
+          <div style={{ backgroundColor:"yellow", width: "100%", height: "100vh" }}></div>
         </Grid>
         
       </Grid>
