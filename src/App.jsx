@@ -11,6 +11,9 @@ import Error from './pages/error/Error';
 import RootLayouts from './components/layouts/RootLayouts';
 import Home from './pages/home/Home';
 import Registration from './pages/auth/Registration';
+import Message from './pages/message/Message';
+import Notification from './pages/notification/Notification';
+import Settings from './pages/settings/Settings';
 
 function App() {
   
@@ -19,6 +22,9 @@ function App() {
       <Route>
         <Route element={<RootLayouts/>}>
           <Route path='/home' element={<Home/>} />
+          <Route path='/message' element={<Message/>} />
+          <Route path='/notification' element={<Notification/>} />
+          <Route path='/settings' element={<Settings/>} />
         </Route>
         <Route path='*' element={<Error/>} />
         <Route path='/' element={<Login/>} />

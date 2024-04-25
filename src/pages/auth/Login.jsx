@@ -58,7 +58,8 @@ const Login = () => {
             <BootstrapButton variant="contained" disableRipple>
                 Login to Continue
             </BootstrapButton>
-            <span style={{color: "#03014C", fontSize: "14px", fontWeight: "700"}}>Don’t have an account ? <a href='/registration' style={{color: "#EA6C00",fontSize: "14px", fontWeight: "700"}}>Sing UP</a></span>
+            <span style={{color: "#03014C", fontSize: "14px", fontWeight: "700"}}>Don’t have an account ? 
+            <Link to="/registration" style={{color: "#EA6C00",fontSize: "14px", fontWeight: "700"}}>Sing Up</Link></span>
           </div>
           
 

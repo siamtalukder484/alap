@@ -1,10 +1,11 @@
 import React from 'react'
-import { Box, Button, Grid, Typography } from '@mui/material'
+import { Box, Button, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles';
 import Images from '../../components/utilities/Images';
 import InputBox from '../../components/utilities/InputBox';
 import LoginImg from '../../assets/images/loginimg.webp'
 import Paragraph from '../../components/utilities/Paragraph';
+import { Link } from 'react-router-dom';
 
 const LoginHeading = styled(Typography)({
   color: "#03014C",
@@ -39,16 +40,24 @@ const Registration = () => {
               <InputBox variant="outlined" placeholder="Email Address" styleing="emailbox" />
               <InputBox variant="outlined" placeholder="Full Name" styleing="emailbox" />
               <InputBox variant="outlined" placeholder="Password" styleing="passwordbox" />
-              
+              <FormControl>
+                  <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="row-radio-buttons-group"
+                  >
+                    <FormControlLabel value="female" control={<Radio />} label="Female" />
+                    <FormControlLabel value="male" control={<Radio />} label="Male" />
+                    <FormControlLabel value="other" control={<Radio />} label="Other" />
+                  </RadioGroup>
+                </FormControl>
             </div>
             <BootstrapButton variant="contained" disableRipple>
                 Sign Up
             </BootstrapButton>
-            <span style={{color: "#03014C", fontSize: "14px", fontWeight: "700"}}>Already Have an Acount ? <a href='/' style={{color: "#EA6C00",fontSize: "14px", fontWeight: "700"}}>Sing In</a></span>
+            <span style={{color: "#03014C", fontSize: "14px", fontWeight: "700"}}>Already Have an Acount ? <Link to="/" style={{color: "#EA6C00",fontSize: "14px", fontWeight: "700"}}>Sing In</Link></span>
           </div>
-          
-
-          
         </Grid>
         <Grid item xs={6}>
           <div style={{ width: "100%", height: "100vh" }}>
