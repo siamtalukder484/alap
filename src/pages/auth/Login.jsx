@@ -19,7 +19,6 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }))
 const LoginHeading = styled(Typography)({
-  
    color: "#03014C",
    fontSize: "33px",
    marginBottom: "30px"
@@ -56,7 +55,6 @@ const Login = () => {
               <InputBox variant="standard" placeholder="Password" styleing="passwordbox" />
               
             </div>
-            {/* <Button variant="contained">Login to Continue</Button> */}
             <BootstrapButton variant="contained" disableRipple>
                 Login to Continue
             </BootstrapButton>

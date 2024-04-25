@@ -10,6 +10,7 @@ import Login from './pages/auth/Login';
 import Error from './pages/error/Error';
 import RootLayouts from './components/layouts/RootLayouts';
 import Home from './pages/home/Home';
+import Registration from './pages/auth/Registration';
 
 function App() {
   
@@ -21,6 +22,7 @@ function App() {
         </Route>
         <Route path='*' element={<Error/>} />
         <Route path='/' element={<Login/>} />
+        <Route path='/registration' element={<Registration/>} />
       </Route>
     )
   );
