@@ -10,6 +10,13 @@ import LoginwithGoogle from '../../assets/images/loginwithgoogle.webp'
 import LoginImg from '../../assets/images/loginimg.webp'
 import "./auth.css"
 import InputBox from '../../components/utilities/InputBox';
+import { Link } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import loginvalidation from '../../validation/LoginValidation';
+import Modal from '@mui/material/Modal';
+
+
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -38,9 +45,39 @@ const BootstrapButton = styled(Button)({
  marginBottom: "40px"
 });
 
-
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const Login = () => {
+ 
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const initialValues = {
+    email: '',
+    password: ''
+  }
+
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: loginvalidation,
+    onSubmit: (values,actions) => {
+      console.log(values);
+      actions.resetForm();
+      // alert(JSON.stringify(values, null, 2));
+    },
+  });
+
   return (
    <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={0}>
@@ -50,20 +87,45 @@ const Login = () => {
               Login to your account!
             </LoginHeading>
             <Images source={LoginwithGoogle} alt="google" styleing="loginwithgoogle" />
-            <div className='logininputbox'>
-              <InputBox variant="standard" placeholder="Email Address" styleing="emailbox" />
-              <InputBox variant="standard" placeholder="Password" styleing="passwordbox" />
-              
-            </div>
-            <BootstrapButton variant="contained" disableRipple>
-                Login to Continue
-            </BootstrapButton>
+            <form onSubmit={formik.handleSubmit}>
+              <div className='logininputbox'>
+                <div>
+                  <InputBox 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    value={formik.values.email} 
+                    onChange={formik.handleChange} 
+                    variant="standard" 
+                    placeholder="Email Address" 
+                    styleing="emailbox" />
+                     {formik.touched.email && formik.errors.email ? (
+                      <p style={{color:"red"}} >{formik.errors.email}</p>
+                    ) : null}
+                </div>
+                <div>
+                  <InputBox 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    value={formik.values.password} 
+                    onChange={formik.handleChange}
+                    variant="standard" 
+                    placeholder="Password" 
+                    styleing="passwordbox" />
+                      {formik.touched.password && formik.errors.password ? (
+                      <p style={{color:"red"}} >{formik.errors.password}</p>
+                    ) : null}
+                </div>
+              </div>
+              <BootstrapButton type='submit' variant="contained" disableRipple>
+                  Login to Continue
+              </BootstrapButton>
+            </form>
             <span style={{color: "#03014C", fontSize: "14px", fontWeight: "700"}}>Don’t have an account ? 
             <Link to="/registration" style={{color: "#EA6C00",fontSize: "14px", fontWeight: "700"}}>Sing Up</Link></span>
+            <p onClick={handleOpen}>Forget Password?</p>
           </div>
-          
-
-          
         </Grid>
         <Grid item xs={6}>
           <div style={{ width: "100%", height: "100vh" }}>
@@ -71,6 +133,29 @@ const Login = () => {
           </div>
         </Grid>
       </Grid>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <h1 style={{textAlign: "center", marginBottom: "15px"}}>Forget your password</h1>
+          <div>
+              <InputBox 
+                type="email" 
+                name="forgetemail" 
+                id="forgetemail" 
+                variant="outlined" 
+                placeholder="Forget Email Address" 
+                styleing="emailbox" />
+            </div>
+            <BootstrapButton type='submit' variant="contained" disableRipple>
+                  Reset Password
+            </BootstrapButton>
+            <button onClick={()=>setOpen(false)}>Close </button>
+        </Box>
+      </Modal>
     </Box>
   )
 }
