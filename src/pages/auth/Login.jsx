@@ -12,9 +12,9 @@ import "./auth.css"
 import InputBox from '../../components/utilities/InputBox';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import loginvalidation from '../../validation/LoginValidation';
 import Modal from '@mui/material/Modal';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 
 
@@ -63,6 +63,8 @@ const Login = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const auth = getAuth();
+
   const initialValues = {
     email: '',
     password: ''
@@ -72,8 +74,19 @@ const Login = () => {
     initialValues: initialValues,
     validationSchema: loginvalidation,
     onSubmit: (values,actions) => {
-      console.log(values);
+      // console.log(values);
       actions.resetForm();
+          signInWithEmailAndPassword(auth, values.email, values.password)
+            .then((userCredential) => {
+              
+              const user = userCredential.user;
+              console.log(user);
+            })
+            .catch((error) => {
+              // const errorCode = error.code;
+              // const errorMessage = error.message;
+                console.log(error);
+            });
       // alert(JSON.stringify(values, null, 2));
     },
   });
