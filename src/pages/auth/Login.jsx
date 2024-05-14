@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -14,9 +14,10 @@ import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import loginvalidation from '../../validation/LoginValidation';
 import Modal from '@mui/material/Modal';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-
+import { getAuth, signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider,signInWithPopup } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
+import { ThreeDots } from 'react-loader-spinner';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -63,7 +64,11 @@ const Login = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const navigate = useNavigate();
+  const [loader, setLoader] = useState(false)
   const auth = getAuth();
+  const [forgetemail, setforgetemail] = useState("")
+  const provider = new GoogleAuthProvider();
 
   const initialValues = {
     email: '',
@@ -75,31 +80,88 @@ const Login = () => {
     validationSchema: loginvalidation,
     onSubmit: (values,actions) => {
       // console.log(values);
-      actions.resetForm();
+          setLoader(true)
           signInWithEmailAndPassword(auth, values.email, values.password)
             .then((userCredential) => {
-              
               const user = userCredential.user;
-              console.log(user);
+              if(user.emailVerified){
+                navigate("/home")
+                setLoader(false)
+              }else{
+                toast("Please Verify your Email..")
+                setLoader(false)
+              }
+              // actions.resetForm();
             })
             .catch((error) => {
               // const errorCode = error.code;
               // const errorMessage = error.message;
                 console.log(error);
+                toast("Invalid Credentials..")
+                setTimeout(()=>{
+                  setLoader(false)
+                },2000)
             });
       // alert(JSON.stringify(values, null, 2));
     },
   });
 
+  let handleForgetPass = () => {
+    console.log(forgetemail);
+    sendPasswordResetEmail(auth, forgetemail)
+  .then(() => {
+    toast("forget email sent hoice")
+
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(error);
+    // ..
+  });
+  }
+
+  let handleGoogleLogin = () => {
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    const user = result.user;
+    console.log(result);
+   
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+  }
+
   return (
    <Box sx={{ flexGrow: 1 }}>
+    <ToastContainer
+position="top-right"
+autoClose={2000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="dark"
+/>
       <Grid container spacing={0}>
         <Grid item xs={6} style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
           <div>
             <LoginHeading variant="h4">
               Login to your account!
             </LoginHeading>
-            <Images source={LoginwithGoogle} alt="google" styleing="loginwithgoogle" />
+            <Images onClick={handleGoogleLogin} source={LoginwithGoogle} alt="google" styleing="loginwithgoogle" />
             <form onSubmit={formik.handleSubmit}>
               <div className='logininputbox'>
                 <div>
@@ -131,8 +193,22 @@ const Login = () => {
                     ) : null}
                 </div>
               </div>
-              <BootstrapButton type='submit' variant="contained" disableRipple>
-                  Login to Continue
+              <BootstrapButton disabled={loader} type='submit' variant="contained" disableRipple>
+                {loader ?
+                  <ThreeDots
+                  visible={true}
+                  height="40"
+                  width="80"
+                  color="#fff"
+                  radius="9"
+                  ariaLabel="three-dots-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  />
+                  :
+                  "Login to Continue"
+                }
+                  
               </BootstrapButton>
             </form>
             <span style={{color: "#03014C", fontSize: "14px", fontWeight: "700"}}>Don’t have an account ? 
@@ -161,9 +237,11 @@ const Login = () => {
                 id="forgetemail" 
                 variant="outlined" 
                 placeholder="Forget Email Address" 
-                styleing="emailbox" />
+                styleing="emailbox" 
+                onChange={(e)=>setforgetemail(e.target.value)}
+                />
             </div>
-            <BootstrapButton type='submit' variant="contained" disableRipple>
+            <BootstrapButton onClick={handleForgetPass} type='submit' variant="contained" disableRipple>
                   Reset Password
             </BootstrapButton>
             <button onClick={()=>setOpen(false)}>Close </button>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Button, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles';
 import Images from '../../components/utilities/Images';
@@ -10,6 +10,10 @@ import { useFormik } from 'formik';
 import registrationvalidation from '../../validation/RegistrationValidation';
 import { getAuth, createUserWithEmailAndPassword,sendEmailVerification,updateProfile   } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+import { ToastContainer, toast } from 'react-toastify';
+import { Puff } from 'react-loader-spinner';
+import { useNavigate } from "react-router-dom";
+
 
 const LoginHeading = styled(Typography)({
   color: "#03014C",
@@ -33,6 +37,8 @@ const BootstrapButton = styled(Button)({
 const Registration = () => {
   const auth = getAuth();
   const db = getDatabase();
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
 
   const initialValues = {
     fullName: '',
@@ -45,6 +51,7 @@ const Registration = () => {
     validationSchema: registrationvalidation,
     onSubmit: (values,actions) => {
       // console.log(values);
+      setLoading(true)
       actions.resetForm();
       createUserWithEmailAndPassword(auth, values.email, values.password)
         .then((userCredential) => {
@@ -60,8 +67,14 @@ const Registration = () => {
                 profile_picture : userCredential.user.photoURL,
               }).then(()=>{
                 console.log("real time data create hoice");
+                toast("Registration Successfull..")
+                setLoading(false)
+                setTimeout(()=>{
+                  navigate("/")
+                },2000)
               });
             }).catch((error) => {
+              setLoading(false)
               console.log("profile update er jamela");
             });
           });
@@ -69,6 +82,7 @@ const Registration = () => {
         })
         .catch((error) => {
           console.log(error);
+          setLoading(false)
           // const errorCode = error.code;
           // const errorMessage = error.message;
           
@@ -79,7 +93,34 @@ const Registration = () => {
   
 
   return (
+    <>
+    {loading &&
+      <div className='loading_wrapper'>
+        <Puff
+          visible={true}
+          height="120"
+          width="120"
+          color="#fff"
+          ariaLabel="puff-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+      />
+      </div>
+    }
     <Box sx={{ flexGrow: 1 }}>
+      <ToastContainer
+      position="top-right"
+      autoClose={2000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+      />
+
       <Grid container spacing={0}>
         <Grid item xs={6} style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
           <div>
@@ -161,6 +202,7 @@ const Registration = () => {
         </Grid>
       </Grid>
     </Box>
+    </>
   )
 }
 
