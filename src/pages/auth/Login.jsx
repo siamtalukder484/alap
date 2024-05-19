@@ -14,10 +14,12 @@ import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import loginvalidation from '../../validation/LoginValidation';
 import Modal from '@mui/material/Modal';
-import { getAuth, signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider,signInWithPopup } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider,signInWithPopup,signOut } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { ThreeDots } from 'react-loader-spinner';
+import { useSelector, useDispatch } from 'react-redux'
+import { logedinUser } from '../../slices/authSlice';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -69,6 +71,7 @@ const Login = () => {
   const auth = getAuth();
   const [forgetemail, setforgetemail] = useState("")
   const provider = new GoogleAuthProvider();
+  const dispatch = useDispatch()
 
   const initialValues = {
     email: '',
@@ -85,11 +88,18 @@ const Login = () => {
             .then((userCredential) => {
               const user = userCredential.user;
               if(user.emailVerified){
+                localStorage.setItem("loggedinUser", JSON.stringify(user))
+                dispatch(logedinUser(user))
+                console.log(user);
                 navigate("/home")
                 setLoader(false)
               }else{
                 toast("Please Verify your Email..")
                 setLoader(false)
+                signOut(auth).then(() => {
+               }).catch((error) => {
+                 
+               });
               }
               // actions.resetForm();
             })
@@ -124,10 +134,21 @@ const Login = () => {
   let handleGoogleLogin = () => {
     signInWithPopup(auth, provider)
   .then((result) => {
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
     const user = result.user;
-    console.log(result);
+    console.log(user);
+    if(user.emailVerified){
+      localStorage.setItem("loggedinUser", JSON.stringify(user))
+      dispatch(logedinUser(user))
+      navigate("/home")
+      setLoader(false)
+    }else{
+      toast("Please Verify your Email..")
+      setLoader(false)
+      signOut(auth).then(() => {
+     }).catch((error) => {
+       
+     });
+    }
    
   }).catch((error) => {
     // Handle Errors here.
