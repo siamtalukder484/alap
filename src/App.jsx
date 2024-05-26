@@ -15,6 +15,7 @@ import Message from './pages/message/Message';
 import Notification from './pages/notification/Notification';
 import Settings from './pages/settings/Settings';
 import IsLogedinUser from './privateRoutes/IsLogedinUser';
+import Profile from './pages/profile/Profile';
 
 function App() {
   
@@ -27,6 +28,7 @@ function App() {
             <Route path='/message' element={<Message/>} />
             <Route path='/notification' element={<Notification/>} />
             <Route path='/settings' element={<Settings/>} />
+            <Route path='/profile/:id' element={<Profile/>}/>
           </Route>
         </Route>
         <Route path='*' element={<Error/>} />

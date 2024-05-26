@@ -1,6 +1,7 @@
 import React from 'react'
 import UserList from '../../components/home/UserList'
 import FriendRequest from './FriendRequest'
+import Friends from '../../components/home/Friends'
 
 const Home = () => {
   return (
@@ -10,6 +11,9 @@ const Home = () => {
       </div>
       <div>
         <FriendRequest/>  
+      </div>
+      <div>
+        <Friends/>
       </div>
     </div>
   )

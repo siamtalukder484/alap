@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import CardHeading from '../../components/utilities/CardHeading'
-import { getDatabase, ref, onValue, set, push } from "firebase/database";
+import { getDatabase, ref, onValue, set, push, remove } from "firebase/database";
 import { dark } from '@mui/material/styles/createPalette';
 import { useSelector, useDispatch } from 'react-redux'
+import { Alert } from '@mui/material';
 
 const FriendRequest = () => {
     const db = getDatabase();
@@ -22,11 +23,35 @@ const FriendRequest = () => {
         });
       },[])
 
+      //Request Delete
+    const handleReqDelete = (deleteinfo) => {
+      remove(ref(db, "friendrequest/" + deleteinfo.id)).then(()=>{
+        console.log("delete done");
+      })
+    }
+
+    //confirm request
+    const handleReqConfirm = (confirminfo) =>{
+        set(push(ref(db, "friends")),{
+            senderid: confirminfo.whosendid,
+            senderemail: confirminfo.whosendemail, 
+            sendername: confirminfo.whosendName,
+            receiverid: data.uid,
+            receiveremail: data.email,
+            receivername: data.displayName,
+        }).then(()=>{
+          remove(ref(db, "friendrequest/" + confirminfo.id)).then(()=>{
+            console.log("confirm done");
+          })
+        })
+    }
+
   return (
     <div className='box'>
         <CardHeading text="Friend Request" />
         <div className='useritembox'>
-          {friendReqList.map((item,index)=>(
+          {friendReqList.length > 0 ?
+          friendReqList.map((item,index)=>(
             <div key={index} className='useritem'>
               <div className="imgbox"></div>
               <div className='userinfo'>
@@ -35,12 +60,14 @@ const FriendRequest = () => {
                   <p>MERN Stack</p>
                 </div>
                 <div>
-                    <button>confirm</button>
-                    <button>delete</button>
+                    <button onClick={()=>handleReqConfirm(item)}>confirm</button>
+                    <button onClick={()=>handleReqDelete(item)}>delete</button>
                 </div>
               </div>
             </div>
           ))
+          :
+          <Alert severity="info">No request found</Alert>
           }
             
         </div>
