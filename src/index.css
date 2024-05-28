@@ -28,3 +28,100 @@ a{
     align-items: center;
     justify-content: center;
 }
+.useritem.msg{
+    padding: 5px;
+    border-radius: 5px;
+    transition: all linear 0.3s;
+    cursor: pointer;
+}
+.useritem.msg:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.box.msg{
+    width: 350px;
+    margin-top: 30px;
+    height: 700px;
+}
+.msgmain{
+    margin-top: 30px;
+    border-radius: 8px;
+    margin-left: 25px;
+    width: 800px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+}
+.msgheading{
+    background-color: blueviolet;
+    padding: 10px 25px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.imgbox{
+    width: 60px;
+    height: 60px;
+    background-color: aliceblue;
+    border-radius: 50%;
+}
+.msgheading h3{
+    color: white;
+    font-size: 25px;
+}
+.msgheading p{
+    color: white;
+    font-size: 16px;
+}
+.msgbody{
+    height: 500px;
+    
+}
+.msgfooter{
+    background-color: blueviolet;
+    padding: 10px 25px;
+}
+.msginput{
+    width: 300px;
+    padding: 6px 10px;
+    background-color: white;
+    border: none;
+    border-radius: 5px;
+    height: 50px;
+}
+.sendbtn{
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 15px;
+    font-size: 20px;
+    height: 40px;
+}
+.msgbody{
+    padding: 30px 15px;
+    overflow-y: scroll;
+}
+.sendmsgmain{
+    display: flex;
+    justify-content: end;
+    margin-top: 12px;
+}
+.sendmsg{
+    background-color: rgb(144, 97, 188);
+    color: white;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 5px;
+    max-width: 80%;
+}
+.receivemsgmain{
+    margin-top: 12px;
+}
+.receivemsg{
+    background-color: rgb(192, 190, 190);
+    color: white;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 5px;
+    max-width: 80%;
+}
