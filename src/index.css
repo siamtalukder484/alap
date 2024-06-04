@@ -103,13 +103,15 @@ a{
 }
 .sendmsgmain{
     display: flex;
+    flex-direction: column;
     justify-content: end;
+    align-items: end;
     margin-top: 12px;
 }
 .sendmsg{
     background-color: rgb(144, 97, 188);
     color: white;
-    display: inline-block;
+    display: block;
     padding: 8px;
     border-radius: 5px;
     max-width: 80%;
@@ -118,10 +120,16 @@ a{
     margin-top: 12px;
 }
 .receivemsg{
+    display: block;
+    max-width: 80%;
+}
+.receivemsg span{
+    display: inline-block;
     background-color: rgb(192, 190, 190);
     color: white;
-    display: inline-block;
     padding: 8px;
     border-radius: 5px;
-    max-width: 80%;
+}
+.receivemsgmain .date, .sendmsgmain .date{
+    font-size: 12px;
 }

@@ -1,16 +1,50 @@
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { getDatabase, ref, onValue, set, push, remove } from "firebase/database";
+import { useSelector, useDispatch } from 'react-redux'
+import moment from 'moment/moment';
+import EmojiPicker from 'emoji-picker-react';
 
 const MsgBox = () => {
-    
+    const db = getDatabase();
     const data = useSelector((state) => state.logedinUserData.value)
     const activeChatData = useSelector((state) => state.activeChatUser.value)
     const [msgText, setMsgText] = useState("")
-
-    
+    const [allMsg, setAllMsg] = useState([])
+    const [emojishow, setEmojishow] = useState(false)
+    // console.log(activeChatData)
+    //message write
     const handleSubmitMsg = () => {
-        console.log(msgText);
+        set(push(ref(db, "message")),{
+            senderid: data?.uid,
+            sendername: data?.displayName,
+            senderemail: data?.email,
+            receivername: activeChatData.senderid == data.uid ? activeChatData.receivername : activeChatData.sendername,
+            receiveremail: activeChatData.senderid == data.uid ? activeChatData.receiveremail : activeChatData.senderemail,
+            receiverid: activeChatData.senderid == data.uid ? activeChatData.receiverid : activeChatData.senderid,
+            message: msgText,
+            date: `${new Date().getFullYear()}-${new Date().getMonth()+1}-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getMilliseconds()}`,
+        }).then(()=>{
+            console.log("msg sent successfully");
+        })
     }
+    //message read
+    useEffect(()=>{
+        const usersRef = ref(db, 'message');
+        onValue(usersRef, (snapshot) => {
+          let arr = []
+          let activeid = data.uid == activeChatData?.senderid ? activeChatData?.receiverid : activeChatData?.senderid
+          snapshot.forEach((item)=>{
+              if((item.val().senderid == data.uid && item.val().receiverid ==activeid) || (item.val().senderid == activeid && item.val().receiverid == data.uid)){
+                arr.push({...item.val(), id: item.key})
+            }
+          })
+          setAllMsg(arr)
+        });
+      },[activeChatData])
+
+      console.log(allMsg);
+
+
 
   return (
     <>{!activeChatData ?
@@ -33,24 +67,36 @@ const MsgBox = () => {
                 </div>
             </div>
             <div className="msgbody">
-                <div className='sendmsgmain'>
-                    <p className='sendmsg'>hello</p>
-                </div>
-                <div className='receivemsgmain'>
-                    <p className='receivemsg'>hello</p>
-                </div>
-                <div className='sendmsgmain'>
-                    <p className='sendmsg'>hello Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae ad porro itaque voluptas, pariatur ipsum praesentium maiores aut? Minus corrupti dolores cumque voluptatem laudantium, totam esse aliquid similique, dolor nostrum iure? Laudantium cupiditate velit at rem sequi nobis quis quam quasi itaque nam. Praesentium, molestiae aliquam eaque excepturi aut deleniti.</p>
-                </div>
-                <div className='receivemsgmain'>
-                    <p className='receivemsg'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequuntur at nam molestiae? Culpa voluptas atque autem distinctio cupiditate ut error. Nemo excepturi sunt, at facere sapiente perspiciatis praesentium nulla quaerat officiis saepe ullam, non reprehenderit obcaecati beatae pariatur repellat hic veniam quod, fuga impedit. Ex provident sint ducimus repudiandae necessitatibus quisquam? Ea debitis magni commodi eum obcaecati? Quo ipsum aspernatur maxime error, doloribus perspiciatis architecto inventore magnam accusamus, commodi quos!</p>
-                </div>
-                <div className='sendmsgmain'>
-                    <p className='sendmsg'>hello Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae ad porro itaque voluptas, pariatur ipsum praesentium maiores aut? Minus corrupti dolores cumque voluptatem laudantium, totam esse aliquid similique, dolor nostrum iure? Laudantium cupiditate velit at rem sequi nobis quis quam quasi itaque nam. Praesentium, molestiae aliquam eaque excepturi aut deleniti.</p>
-                </div>
+                {allMsg.map((item,index)=>(
+                    item.senderid == data.uid ?
+                    <div className='sendmsgmain'>
+                        <p className='sendmsg'>{item.message}</p>
+                        <span className='date'>
+                            {moment(item.date, "YYYYMMDD hh:mm").fromNow()}
+                        </span>
+                    </div>
+                    :
+                    <div className='receivemsgmain'>
+                        <p className='receivemsg'>
+                            <span>
+                                {item.message}
+                            </span>
+                        </p>
+                        <span className='date'>
+                            {moment(item.date, "YYYYMMDD hh:mm").fromNow()}
+                        </span>
+                    </div>
+                ))
+
+                }
+                
             </div>
             <div className="msgfooter">
-                <div style={{display: "flex", alignItems: "center",  gap: "10px"}}>
+                <div style={{display: "flex", alignItems: "center",  gap: "10px", position: "relative"}}>
+                    <button onClick={()=>setEmojishow(!emojishow)}>Emoji</button>
+                    <div style={{position: "absolute", left: "0", bottom:"60px"}}>
+                        <EmojiPicker open={emojishow} />
+                    </div>
                     <input onChange={(e)=>setMsgText(e.target.value)} type='text' className='msginput' placeholder='Enter your msg'/>
                     {msgText.length > 0 &&
                     <button onClick={handleSubmitMsg} className='sendbtn'>send</button>
