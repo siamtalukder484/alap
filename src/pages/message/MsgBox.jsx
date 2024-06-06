@@ -3,6 +3,14 @@ import { getDatabase, ref, onValue, set, push, remove } from "firebase/database"
 import { useSelector, useDispatch } from 'react-redux'
 import moment from 'moment/moment';
 import EmojiPicker from 'emoji-picker-react';
+import { css } from 'emotion';
+import ScrollToBottom from 'react-scroll-to-bottom';
+
+const ROOT_CSS = css({
+    height: 600,
+    width: 400
+  });
+  
 
 const MsgBox = () => {
     const db = getDatabase();
@@ -24,7 +32,7 @@ const MsgBox = () => {
             message: msgText,
             date: `${new Date().getFullYear()}-${new Date().getMonth()+1}-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getMilliseconds()}`,
         }).then(()=>{
-            console.log("msg sent successfully");
+            setMsgText("")
         })
     }
     //message read
@@ -42,9 +50,27 @@ const MsgBox = () => {
         });
       },[activeChatData])
 
-      console.log(allMsg);
 
-
+      let handleEmoji = (e) => {
+        setMsgText(msgText + e.emoji)
+        // console.log(e.emoji)
+      }
+      let handleEnterPress = (e) => {
+        if(e.key == "Enter"){
+            set(push(ref(db, "message")),{
+                senderid: data?.uid,
+                sendername: data?.displayName,
+                senderemail: data?.email,
+                receivername: activeChatData.senderid == data.uid ? activeChatData.receivername : activeChatData.sendername,
+                receiveremail: activeChatData.senderid == data.uid ? activeChatData.receiveremail : activeChatData.senderemail,
+                receiverid: activeChatData.senderid == data.uid ? activeChatData.receiverid : activeChatData.senderid,
+                message: msgText,
+                date: `${new Date().getFullYear()}-${new Date().getMonth()+1}-${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getMilliseconds()}`,
+            }).then(()=>{
+                setMsgText("")
+            })
+        }
+      }
 
   return (
     <>{!activeChatData ?
@@ -67,6 +93,7 @@ const MsgBox = () => {
                 </div>
             </div>
             <div className="msgbody">
+            <ScrollToBottom className={ROOT_CSS}>
                 {allMsg.map((item,index)=>(
                     item.senderid == data.uid ?
                     <div className='sendmsgmain'>
@@ -87,17 +114,17 @@ const MsgBox = () => {
                         </span>
                     </div>
                 ))
-
                 }
+            </ScrollToBottom>
                 
             </div>
             <div className="msgfooter">
                 <div style={{display: "flex", alignItems: "center",  gap: "10px", position: "relative"}}>
                     <button onClick={()=>setEmojishow(!emojishow)}>Emoji</button>
                     <div style={{position: "absolute", left: "0", bottom:"60px"}}>
-                        <EmojiPicker open={emojishow} />
+                        <EmojiPicker onEmojiClick={handleEmoji} open={emojishow} />
                     </div>
-                    <input onChange={(e)=>setMsgText(e.target.value)} type='text' className='msginput' placeholder='Enter your msg'/>
+                    <input onKeyUp={handleEnterPress} onChange={(e)=>setMsgText(e.target.value)} type='text' className='msginput' value={msgText} placeholder='Enter your msg'/>
                     {msgText.length > 0 &&
                     <button onClick={handleSubmitMsg} className='sendbtn'>send</button>
 
