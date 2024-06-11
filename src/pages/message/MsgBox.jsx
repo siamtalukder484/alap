@@ -3,15 +3,23 @@ import { getDatabase, ref, onValue, set, push, remove } from "firebase/database"
 import { useSelector, useDispatch } from 'react-redux'
 import moment from 'moment/moment';
 import EmojiPicker from 'emoji-picker-react';
-import { css } from 'emotion';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import { AudioRecorder } from 'react-audio-voice-recorder';
 
-const ROOT_CSS = css({
-    height: 600,
-    width: 400
-  });
+
+const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    const audio = document.createElement("audio");
+    audio.src = url;
+    audio.controls = true;
+
+    console.log(url)
+    console.log(audio);
+    // document.body.appendChild(audio);
+  };
   
 
+  
 const MsgBox = () => {
     const db = getDatabase();
     const data = useSelector((state) => state.logedinUserData.value)
@@ -92,8 +100,8 @@ const MsgBox = () => {
                     <p>Active Now</p>
                 </div>
             </div>
-            <div className="msgbody">
-            <ScrollToBottom className={ROOT_CSS}>
+            <ScrollToBottom className="msgbody">
+            
                 {allMsg.map((item,index)=>(
                     item.senderid == data.uid ?
                     <div className='sendmsgmain'>
@@ -116,14 +124,21 @@ const MsgBox = () => {
                 ))
                 }
             </ScrollToBottom>
-                
-            </div>
             <div className="msgfooter">
                 <div style={{display: "flex", alignItems: "center",  gap: "10px", position: "relative"}}>
                     <button onClick={()=>setEmojishow(!emojishow)}>Emoji</button>
                     <div style={{position: "absolute", left: "0", bottom:"60px"}}>
                         <EmojiPicker onEmojiClick={handleEmoji} open={emojishow} />
                     </div>
+                    <AudioRecorder 
+                        onRecordingComplete={addAudioElement}
+                        audioTrackConstraints={{
+                            noiseSuppression: true,
+                            echoCancellation: true,
+                        }} 
+                        downloadOnSavePress={true}
+                        downloadFileExtension="webm"
+                        />
                     <input onKeyUp={handleEnterPress} onChange={(e)=>setMsgText(e.target.value)} type='text' className='msginput' value={msgText} placeholder='Enter your msg'/>
                     {msgText.length > 0 &&
                     <button onClick={handleSubmitMsg} className='sendbtn'>send</button>
