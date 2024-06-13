@@ -133,3 +133,9 @@ a{
 .receivemsgmain .date, .sendmsgmain .date{
     font-size: 12px;
 }
+
+.sendaudio::-webkit-media-controls-play-button,
+.sendaudio::-webkit-media-controls-panel {
+     background-color: blueviolet;
+     color: blueviolet;
+     }
